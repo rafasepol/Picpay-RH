@@ -16,7 +16,7 @@ public class FuncionarioRepository {
     private long proximoId = 1;
 
     public List<Funcionario> findAll() {
-        return listFuncionario;
+        return List.copyOf(listFuncionario);
     }
 
     public Optional<Funcionario> findById(Long id) {

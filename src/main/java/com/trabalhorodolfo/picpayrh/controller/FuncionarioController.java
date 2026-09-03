@@ -5,8 +5,11 @@ import com.trabalhorodolfo.picpayrh.entity.Status;
 import com.trabalhorodolfo.picpayrh.service.FuncionarioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -72,6 +75,23 @@ public class FuncionarioController {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> tratarValidacao(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(Map.of("erro", e.getMessage()));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Map<String, String>> tratarTipoInvalido(MethodArgumentTypeMismatchException e) {
+        String valoresAceitos = "";
+        if (e.getRequiredType() == Status.class) {
+            valoresAceitos = " Valores aceitos: " + Arrays.toString(Status.values()) + ".";
+        }
+        return ResponseEntity.badRequest().body(Map.of(
+                "erro", "O valor '" + e.getValue() + "' é inválido para o parâmetro '"
+                        + e.getName() + "'." + valoresAceitos));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, String>> tratarCorpoInvalido(HttpMessageNotReadableException e) {
+        return ResponseEntity.badRequest()
+                .body(Map.of("erro", "O corpo da requisição está ausente ou mal formatado."));
     }
 
     private ResponseEntity<Map<String, String>> naoEncontrado(Long id) {

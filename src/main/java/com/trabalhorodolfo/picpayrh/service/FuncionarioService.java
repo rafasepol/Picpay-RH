@@ -23,6 +23,7 @@ public class FuncionarioService {
         validarObrigatorios(funcionario);
         return funcionariorepo.salvar(funcionario);
     }
+
     public List<Funcionario> listarFuncionarios() {
         return funcionariorepo.findAll();
     }
